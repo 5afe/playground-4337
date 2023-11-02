@@ -19,7 +19,7 @@ contract AccountTest is Test {
         uint256 balance = address(this).balance;
         uint256 missing = 42;
 
-        UserOperation memory userOp = UserOperation({
+        UserOperation memory op = UserOperation({
             sender: address(account),
             nonce: 0,
             initCode: "",
@@ -32,7 +32,7 @@ contract AccountTest is Test {
             paymasterAndData: "",
             signature: ""
         });
-        account.validateUserOp(userOp, keccak256(abi.encode(userOp)), missing);
+        account.validateUserOp(op, keccak256(abi.encode(op)), missing);
 
         assertEq(address(this).balance, balance + missing);
     }

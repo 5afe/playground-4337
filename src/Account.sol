@@ -24,7 +24,7 @@ contract Account is IAccount {
         validationData = _packValidationData(false, 0, 0);
     }
 
-    function execute(address payable to, uint256 value, bytes memory data) public {
+    function execute(address to, uint256 value, bytes memory data) public {
         (bool success,) = to.call{value: value}(data);
         if (!success) {
             revert Reverted();
