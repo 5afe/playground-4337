@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-newer
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.19;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {EntryPoint} from "account-abstraction/core/EntryPoint.sol";
@@ -32,8 +32,8 @@ contract ERC4337Test is Test {
             nonce: 0,
             initCode: abi.encodePacked(factory, abi.encodeCall(factory.create, (address(this), 0))),
             callData: abi.encodeCall(AccountContract.execute, (receiver, 0.1 ether, "")),
-            callGasLimit: 50000,
-            verificationGasLimit: 300000,
+            callGasLimit: 60000,
+            verificationGasLimit: 350000,
             preVerificationGas: 0,
             maxFeePerGas: 1 gwei,
             maxPriorityFeePerGas: 0,

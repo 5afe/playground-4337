@@ -1,21 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-newer
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.19;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {EntryPoint} from "account-abstraction/core/EntryPoint.sol";
 
+import {EntryPoint} from "./artifacts/EntryPoint.sol";
+import {Create2} from "./util/Create2.sol";
 import {Factory} from "../src/Factory.sol";
 
 contract Deployment is Script {
     function run() public {
-        uint256 deployer = vm.envUint("PRIVATE_KEY");
+        Create2.setup();
 
-        vm.startBroadcast(deployer);
-        EntryPoint entrypoint = new EntryPoint();
-        Factory factory = new Factory();
+        vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
+        address factory = Create2.deploy(0, type(Factory).creationCode);
+        address entrypoint = Create2.deploy(EntryPoint.SALT, EntryPoint.CODE);
+        require(entrypoint == EntryPoint.ADDRESS);
         vm.stopBroadcast();
 
-        console2.log("deployed entrypoint", address(entrypoint));
-        console2.log("deployed factory", address(factory));
+        console2.log("deployed factory", factory);
+        console2.log("deployed entrypoint", entrypoint);
     }
 }

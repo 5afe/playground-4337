@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-newer
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.19;
 
 import {_packValidationData} from "account-abstraction/core/Helpers.sol";
 import {IAccount} from "account-abstraction/interfaces/IAccount.sol";
