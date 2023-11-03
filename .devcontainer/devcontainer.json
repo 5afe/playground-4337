@@ -1,7 +1,4 @@
 {
-	"name": "Foundry",
-	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
-	"features": {
-		"ghcr.io/nlordell/features/foundry:0": {}
-	}
+  "name": "Node.js & TypeScript",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye"
 }

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-newer
 pragma solidity ^0.8.19;
 
-import {_packValidationData} from "account-abstraction/core/Helpers.sol";
-import {IAccount} from "account-abstraction/interfaces/IAccount.sol";
-import {UserOperation} from "account-abstraction/interfaces/UserOperation.sol";
+import {_packValidationData} from "@account-abstraction/contracts/core/Helpers.sol";
+import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";
+import {UserOperation} from "@account-abstraction/contracts/interfaces/UserOperation.sol";
 
 contract Account is IAccount {
     error Reverted();

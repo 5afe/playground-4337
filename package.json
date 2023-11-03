@@ -1,0 +1,16 @@
+{
+  "name": "playground-4337",
+  "private": true,
+  "scripts": {
+    "fmt": "prettier -w .",
+    "playground": "hardhat run --network localhost scripts/playground.js",
+    "test": "hardhat test"
+  },
+  "devDependencies": {
+    "@account-abstraction/contracts": "^0.6.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.19.0",
+    "node-fetch": "^2.7.0",
+    "prettier": "^3.0.3"
+  }
+}
