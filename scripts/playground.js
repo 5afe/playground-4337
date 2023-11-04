@@ -7,13 +7,26 @@ const { prepareUserOp } = require("../src");
 const SALT = 0;
 const BUNDLER = "http://localhost:3000/rpc";
 const FUND = ethers.parseEther("1.0");
+const MNEMONIC = {
+  relayer:
+    "myth like bonus scare over problem client lizard pioneer submit female collect",
+  owner: "test test test test test test test test test test test junk",
+};
 
 async function main() {
-  const [deployer, owner] = await ethers.getSigners();
+  const [deployer] = await ethers.getSigners();
   const { deploy } = await create2Deployer(deployer);
 
   const entrypoint = await deploy(0, EntryPoint);
   console.log(`using entrypoint ${await entrypoint.getAddress()}`);
+
+  const relayer = ethers.Wallet.fromPhrase(MNEMONIC.relayer, ethers.provider);
+  await fundAddress(deployer, relayer.address, FUND);
+  console.log(`using relayer ${relayer.address}`);
+
+  const owner = ethers.Wallet.fromPhrase(MNEMONIC.owner, ethers.provider);
+  await fundAddress(deployer, owner.address, FUND);
+  console.log(`using owner ${owner.address}`);
 
   const Factory = await ethers.getContractFactory("Factory", deployer);
   const factory = await deploy(SALT, Factory);
@@ -34,11 +47,7 @@ async function main() {
   console.log("sending operation", op);
 
   if (await hasNoCode(op.sender)) {
-    if ((await ethers.provider.getBalance(op.sender)) === 0n) {
-      await deployer
-        .sendTransaction({ to: op.sender, value: FUND })
-        .then((tx) => tx.wait());
-    }
+    await fundAddress(deployer, op.sender, FUND);
   } else {
     op.initCode = "0x";
   }
@@ -115,6 +124,12 @@ function bundlerRpc(url) {
       return result;
     },
   };
+}
+
+async function fundAddress(from, to, value) {
+  if ((await ethers.provider.getBalance(to)) === 0n) {
+    await from.sendTransaction({ to, value }).then((tx) => tx.wait());
+  }
 }
 
 main().catch((err) => {

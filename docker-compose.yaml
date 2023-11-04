@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  geth:
+    image: docker.io/ethereum/client-go:latest
+    restart: always
+    environment:
+      GETH_DEV: "true"
+      GETH_HTTP: "true"
+      GETH_HTTP_API: "personal,eth,net,web3,debug"
+      GETH_RPC_ALLOW_UNPROTECTED_TXS: "true"
+    ports:
+      - 8545:8545
+
+  bundler:
+    build:
+      context: .
+      dockerfile: docker/bundler/Dockerfile
+    restart: always
+    ports:
+      - 3000:3000
+
+  # playground:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile
+  #   volumes:
+  #     - type: bind
+  #       source: ./
+  #       target: /src/playground
