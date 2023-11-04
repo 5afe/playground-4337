@@ -7,7 +7,9 @@ services:
     environment:
       GETH_DEV: "true"
       GETH_HTTP: "true"
+      GETH_HTTP_ADDR: "0.0.0.0"
       GETH_HTTP_API: "personal,eth,net,web3,debug"
+      GETH_HTTP_VHOSTS: "*"
       GETH_RPC_ALLOW_UNPROTECTED_TXS: "true"
     ports:
       - 8545:8545
@@ -16,10 +18,9 @@ services:
     build:
       context: .
       dockerfile: docker/setup/Dockerfile
-    restart: never
     environment:
       PLAYGROUND_GETH_URL: "http://geth:8545"
-      PLAYGROUND_BUNDLER_URL: "http://bundler:8545"
+      PLAYGROUND_BUNDLER_URL: "http://bundler:3000/rpc"
     depends_on:
       - geth
 
@@ -28,7 +29,7 @@ services:
       context: .
       dockerfile: docker/bundler/Dockerfile
     restart: always
-    command: ["bundler", "--network", "http://geth:8545"]
+    command: ["--network", "http://geth:8545"]
     ports:
       - 3000:3000
     depends_on:

@@ -6,7 +6,7 @@ async function prepareUserOp({ owner, factory, feeData }) {
   const account = await ethers.getContractAt("Account", sender);
   return {
     sender: sender,
-    nonce: randomNonce(),
+    nonce: nonce(Date.now(), 0),
     initCode: ethers.solidityPacked(
       ["address", "bytes"],
       [
@@ -28,10 +28,10 @@ async function prepareUserOp({ owner, factory, feeData }) {
   };
 }
 
-function randomNonce(sequence) {
-  const key = BigInt(~~(Math.random() * 0x7fffffff)) << 64n;
-  const seq = BigInt(sequence ?? 0) & 0xffffffffffffffffn;
-  return ethers.toBeHex(key + seq);
+function nonce(key, sequence) {
+  const k = BigInt(key) << 64n;
+  const s = BigInt(sequence ?? 0) & 0xffffffffffffffffn;
+  return ethers.toBeHex(k | s);
 }
 
 module.exports = {

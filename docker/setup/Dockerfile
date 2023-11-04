@@ -5,6 +5,12 @@ WORKDIR /src/playground
 COPY package.json package-lock.json .
 RUN npm ci
 
-COPY contracts/ scripts/ src/ hardhat.config.js .
+COPY contracts contracts
+COPY hardhat.config.js .
+RUN npm run compile
+
+COPY scripts scripts
+COPY src src
+
 ENTRYPOINT ["npm", "run"]
 CMD ["setup"]
