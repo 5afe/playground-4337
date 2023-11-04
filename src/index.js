@@ -34,4 +34,6 @@ function randomNonce(sequence) {
   return ethers.toBeHex(key + seq);
 }
 
-module.exports = { prepareUserOp };
+module.exports = {
+  prepareUserOp,
+};

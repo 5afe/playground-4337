@@ -4,6 +4,7 @@
   "scripts": {
     "fmt": "prettier -w .",
     "playground": "hardhat run --network localhost scripts/playground.js",
+    "setup": "hardhat run --network localhost scripts/setup.js",
     "test": "hardhat test"
   },
   "devDependencies": {

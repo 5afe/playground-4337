@@ -12,6 +12,14 @@ services:
     ports:
       - 8545:8545
 
+  setup:
+    build:
+      context: .
+      dockerfile: docker/setup/Dockerfile
+    restart: never
+    depends_on:
+      - geth
+
   bundler:
     build:
       context: .
@@ -19,12 +27,6 @@ services:
     restart: always
     ports:
       - 3000:3000
-
-  # playground:
-  #   build:
-  #     context: .
-  #     dockerfile: docker/Dockerfile
-  #   volumes:
-  #     - type: bind
-  #       source: ./
-  #       target: /src/playground
+    depends_on:
+      - geth
+      - setup
