@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "fmt": "prettier -w .",
-    "playground": "hardhat run --network localhost scripts/playground.js",
-    "setup": "hardhat run --network localhost scripts/setup.js",
+    "playground": "hardhat run --network geth scripts/playground.js",
+    "setup": "hardhat run --network geth scripts/setup.js",
     "test": "hardhat test"
   },
   "devDependencies": {

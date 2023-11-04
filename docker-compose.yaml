@@ -17,6 +17,9 @@ services:
       context: .
       dockerfile: docker/setup/Dockerfile
     restart: never
+    environment:
+      PLAYGROUND_GETH_URL: "http://geth:8545"
+      PLAYGROUND_BUNDLER_URL: "http://bundler:8545"
     depends_on:
       - geth
 
@@ -25,8 +28,9 @@ services:
       context: .
       dockerfile: docker/bundler/Dockerfile
     restart: always
+    command: ["bundler", "--network", "http://geth:8545"]
     ports:
       - 3000:3000
     depends_on:
-      - geth
-      - setup
+      setup:
+        condition: service_completed_successfully

@@ -1,10 +1,10 @@
 const { ethers } = require("hardhat");
 
-const { bundlerRpc, setup } = require("./lib");
+const { bundlerRpc, hasCode, setup } = require("./lib");
 const { prepareUserOp } = require("../src");
 
-const SALT = 0;
-const BUNDLER = "http://localhost:3000/rpc";
+const BUNDLER =
+  process.env.PLAYGROUND_BUNDLER_URL ?? "http://localhost:3000/rpc";
 
 async function main() {
   const { deploy, fundAddress, entrypoint, relayer, owner } = await setup();
@@ -14,7 +14,7 @@ async function main() {
   console.log(`using owner ${owner.address}`);
 
   const Factory = await ethers.getContractFactory("Factory");
-  const factory = await deploy(SALT, Factory);
+  const factory = await deploy(4337, Factory);
   console.log(`using factory ${await factory.getAddress()}`);
 
   const { maxFeePerGas, maxPriorityFeePerGas } =
@@ -29,6 +29,9 @@ async function main() {
     },
   });
   await fundAddress(op.sender);
+  if (await hasCode(op.sender)) {
+    op.initCode = "0x";
+  }
   console.log(`using account ${op.sender}`);
   console.log("sending operation", op);
 

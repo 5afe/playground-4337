@@ -7,9 +7,9 @@ const FUND = {
   owner: ethers.parseEther("10.0"),
 };
 const MNEMONIC = {
-  relayer:
+  relayer: "test test test test test test test test test test test junk",
+  owner:
     "myth like bonus scare over problem client lizard pioneer submit female collect",
-  owner: "test test test test test test test test test test test junk",
 };
 
 async function setup() {
@@ -34,8 +34,12 @@ async function setup() {
   };
 }
 
+async function hasCode(address) {
+  return ethers.dataLength(await ethers.provider.getCode(address)) !== 0;
+}
+
 async function hasNoCode(address) {
-  return ethers.dataLength(await ethers.provider.getCode(address)) === 0;
+  return !(await hasCode(address));
 }
 
 async function create2Deployer(signer) {
@@ -115,5 +119,7 @@ function bundlerRpc(url) {
 
 module.exports = {
   bundlerRpc,
+  hasCode,
+  hasNoCode,
   setup,
 };
