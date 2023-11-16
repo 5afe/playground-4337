@@ -6,6 +6,7 @@ services:
     restart: always
     environment:
       GETH_DEV: "true"
+      GET_DEV_PERIOD: "10"
       GETH_HTTP: "true"
       GETH_HTTP_ADDR: "0.0.0.0"
       GETH_HTTP_API: "personal,eth,net,web3,debug"

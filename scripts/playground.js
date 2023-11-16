@@ -26,9 +26,11 @@ async function main() {
   });
   await fundAddress(op.sender);
   if (await hasCode(op.sender)) {
+    console.log(`using existing account ${op.sender}`);
     op.initCode = "0x";
+  } else {
+    console.log(`using new account ${op.sender}`);
   }
-  console.log(`using account ${op.sender}`);
   console.log("sending operation", op);
 
   const bundler = bundlerRpc(BUNDLER);
