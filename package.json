@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "compile": "hardhat compile",
-    "fmt": "prettier -w .",
+    "fmt": "prettier -w . && prettier -w --plugin prettier-plugin-solidity 'contracts/**/*.sol'",
     "playground": "hardhat run --network geth scripts/playground.js",
     "setup": "hardhat run --network geth scripts/setup.js",
     "test": "hardhat test"
@@ -12,7 +12,7 @@
     "@account-abstraction/contracts": "^0.6.0",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "hardhat": "^2.19.0",
-    "node-fetch": "^2.7.0",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "prettier-plugin-solidity": "^1.2.0"
   }
 }

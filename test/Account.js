@@ -7,12 +7,17 @@ const { ethers } = require("hardhat");
 
 describe("Account", function () {
   async function setup() {
-    const [owner, ...signers] = await ethers.getSigners();
+    const [, owner] = await ethers.getSigners();
+
+    const Flag = await ethers.getContractFactory("Flag");
+    const flag = await Flag.deploy();
 
     const Account = await ethers.getContractFactory("Account");
-    const account = await Account.deploy(owner);
+    const account = await Account.deploy(flag.target, owner, {
+      value: ethers.parseEther("1.0"),
+    });
 
-    return { account, owner, signers };
+    return { flag, account, owner };
   }
 
   describe("constructor", function () {
@@ -28,7 +33,7 @@ describe("Account", function () {
       const { account } = await loadFixture(setup);
 
       const op = {
-        sender: await account.getAddress(),
+        sender: account.target,
         nonce: 0,
         initCode: "0x",
         callData: "0x",
@@ -41,6 +46,45 @@ describe("Account", function () {
         signature: "0x",
       };
       await account.validateUserOp(op, ethers.ZeroHash, 0);
+    });
+
+    it("should fail validation when flag is reset", async function () {
+      const { flag, account, owner } = await loadFixture(setup);
+
+      const balances = {
+        account: await ethers.provider.getBalance(account.target),
+        owner: await ethers.provider.getBalance(owner.address),
+      };
+      expect(balances.account).to.not.equal(0);
+
+      const op = {
+        sender: account.target,
+        nonce: 0,
+        initCode: "0x",
+        callData: "0x",
+        callGasLimit: 0,
+        verificationGasLimit: 0,
+        preVerificationGas: 0,
+        maxFeePerGas: 0,
+        maxPriorityFeePerGas: 0,
+        paymasterAndData: "0x",
+        signature: "0x",
+      };
+
+      expect(
+        await account.validateUserOp.staticCall(op, ethers.ZeroHash, 0),
+      ).to.equal(0);
+
+      await flag.reset();
+      expect(
+        await account.validateUserOp.staticCall(op, ethers.ZeroHash, 0),
+      ).to.equal(1);
+
+      await account.validateUserOp(op, ethers.ZeroHash, 0);
+      expect(await ethers.provider.getBalance(account.target)).to.equal(0);
+      expect(await ethers.provider.getBalance(owner.address)).to.equal(
+        balances.account + balances.owner,
+      );
     });
   });
 });

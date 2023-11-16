@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 
 const { bundlerRpc, hasCode, setup } = require("./lib");
-const { prepareUserOp } = require("../src");
+const { prepareUserOp, sentUserOp } = require("../src");
 
 const BUNDLER =
   process.env.PLAYGROUND_BUNDLER_URL ?? "http://localhost:3000/rpc";
@@ -9,20 +9,16 @@ const BUNDLER =
 async function main() {
   const { deploy, fundAddress, entrypoint, relayer, owner } = await setup();
 
-  console.log(`using entrypoint ${await entrypoint.getAddress()}`);
+  console.log(`using entrypoint ${entrypoint.target}`);
   console.log(`using relayer ${relayer.address}`);
   console.log(`using owner ${owner.address}`);
-
-  const Factory = await ethers.getContractFactory("Factory");
-  const factory = await deploy(4337, Factory);
-  console.log(`using factory ${await factory.getAddress()}`);
 
   const { maxFeePerGas, maxPriorityFeePerGas } =
     await ethers.provider.getFeeData();
   const op = await prepareUserOp({
-    owner,
+    deploy,
     entrypoint,
-    factory,
+    owner,
     feeData: {
       maxFeePerGas: ethers.toBeHex(maxFeePerGas),
       maxPriorityFeePerGas: ethers.toBeHex(maxPriorityFeePerGas),
@@ -36,11 +32,10 @@ async function main() {
   console.log("sending operation", op);
 
   const bundler = bundlerRpc(BUNDLER);
-  const result = await bundler.sendUserOperation(
-    op,
-    await entrypoint.getAddress(),
-  );
-  console.log("sent user operation", result);
+  const hash = await bundler.sendUserOperation(op, entrypoint.target);
+  console.log("sent user operation", hash);
+
+  await sentUserOp({ entrypoint, op, hash });
 }
 
 main().catch((err) => {

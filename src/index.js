@@ -1,16 +1,19 @@
 const { ethers } = require("hardhat");
 
-async function prepareUserOp({ owner, factory, feeData }) {
+async function prepareUserOp({ deploy, entrypoint, owner, feeData }) {
+  const Factory = await ethers.getContractFactory("Factory");
+  const factory = await deploy(4337, Factory);
+
   const salt = 42;
   const sender = await factory.getAccountAddress(owner.address, salt);
   const account = await ethers.getContractAt("Account", sender);
   return {
     sender: sender,
-    nonce: nonce(Date.now(), 0),
+    nonce: ethers.toBeHex(await entrypoint.getNonce(sender, 0)),
     initCode: ethers.solidityPacked(
       ["address", "bytes"],
       [
-        await factory.getAddress(),
+        factory.target,
         factory.interface.encodeFunctionData("create", [owner.address, salt]),
       ],
     ),
@@ -28,12 +31,16 @@ async function prepareUserOp({ owner, factory, feeData }) {
   };
 }
 
-function nonce(key, sequence) {
-  const k = BigInt(key) << 64n;
-  const s = BigInt(sequence ?? 0) & 0xffffffffffffffffn;
-  return ethers.toBeHex(k | s);
+async function sentUserOp({ entrypoint, op }) {
+  const key = BigInt(op.nonce) >> 64n;
+  while ((await entrypoint.getNonce(op.sender, key)) <= op.nonce) {
+    console.log("waiting for account nonce to change...");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  console.log("user operation executed on-chain");
 }
 
 module.exports = {
   prepareUserOp,
+  sentUserOp,
 };

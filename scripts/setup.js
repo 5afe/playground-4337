@@ -3,7 +3,7 @@ const { setup } = require("./lib");
 async function main() {
   const { entrypoint, relayer, owner } = await setup();
 
-  console.log(`using entrypoint ${await entrypoint.getAddress()}`);
+  console.log(`using entrypoint ${entrypoint.target}`);
   console.log(`using relayer ${relayer.address}`);
   console.log(`using owner ${owner.address}`);
 }

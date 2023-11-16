@@ -1,6 +1,5 @@
 const EntryPoint = require("@account-abstraction/contracts/artifacts/EntryPoint.json");
 const { ethers } = require("hardhat");
-const fetch = require("node-fetch");
 
 const FUND = {
   default: ethers.parseEther("1.0"),
@@ -94,25 +93,22 @@ function etherFunder(from, fundDefault) {
 }
 
 function bundlerRpc(url) {
+  const connection = new ethers.FetchRequest(url);
   return {
     sendUserOperation: async (op, entrypoint) => {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          method: "eth_sendUserOperation",
-          params: [op, entrypoint],
-          id: 4337,
-        }),
+      const request = connection.clone();
+      request.setHeader("content-type", "application/json");
+      request.body = JSON.stringify({
+        jsonrpc: "2.0",
+        method: "eth_sendUserOperation",
+        params: [op, entrypoint],
+        id: 4337,
       });
-      const { result, error } = await response.json();
-      if (error !== undefined) {
-        throw new Error(`4337 bundler error: ${JSON.stringify(error)}`);
-      }
-      return result;
+
+      const response = await request.send();
+      response.assertOk();
+      
+      return response.bodyJson.result;
     },
   };
 }
