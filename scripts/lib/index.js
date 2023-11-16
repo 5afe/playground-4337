@@ -107,7 +107,7 @@ function bundlerRpc(url) {
 
       const response = await request.send();
       response.assertOk();
-      
+
       return response.bodyJson.result;
     },
   };
